@@ -2,24 +2,18 @@ import torch
 from torch import nn
 from IPython import display
 from d2l import torch as d2l
+
 batch_size = 256
 train_iter, test_iter = d2l.load_data_fashion_mnist(batch_size)
 
 X = torch.tensor([[1.0, 2.0, 3.0], [4.0, 5.0, 6.0]])
 X.sum(0, keepdim=True), X.sum(1, keepdim=True)
 
-
 num_inputs = 784
 num_outputs = 10
 
 W = torch.normal(0, 0.01, size=(num_inputs, num_outputs), requires_grad=True)
 b = torch.zeros(num_outputs, requires_grad=True)
-
-def try_gpu(i=0):  #@save
-    """如果存在，则返回gpu(i)，否则返回cpu()"""
-    if torch.cuda.device_count() >= i + 1:
-        return torch.device(f'cuda:{i}')
-    return torch.device('cpu')
 
 def softmax(X):
     X_exp = torch.exp(X)
@@ -125,13 +119,8 @@ class Animator:  #@save
         for x, y, fmt in zip(self.X, self.Y, self.fmts):
             self.axes[0].plot(x, y, fmt)
         self.config_axes()
-    
-        # display.display(self.fig)
-        # display.clear_output(wait=True)
-
-    def show(self):
-        self.fig.show()
-        
+        display.display(self.fig)
+        display.clear_output(wait=True)
 
 def train_ch3(net, train_iter, test_iter, loss, num_epochs, updater):  #@save
     """训练模型（定义见第3章）"""
@@ -144,16 +133,17 @@ def train_ch3(net, train_iter, test_iter, loss, num_epochs, updater):  #@save
         test_acc = evaluate_accuracy(net, test_iter)
         animator.add(epoch + 1, train_metrics + (test_acc,))
     train_loss, train_acc = train_metrics
-    animator.show()
     assert train_loss < 0.5, train_loss
     assert train_acc <= 1 and train_acc > 0.7, train_acc
     assert test_acc <= 1 and test_acc > 0.7, test_acc
-    input("")
 
 lr = 0.2
 
 def updater(batch_size):
     return d2l.sgd([W, b], lr, batch_size)
+
+num_epochs = 20
+train_ch3(net, train_iter, test_iter, cross_entropy, num_epochs, updater)
 
 def predict_ch3(net, test_iter, n=6):  #@save
     """预测标签（定义见第3章）"""
@@ -164,8 +154,5 @@ def predict_ch3(net, test_iter, n=6):  #@save
     titles = [true +'\n' + pred for true, pred in zip(trues, preds)]
     d2l.show_images(
         X[0:n].reshape((n, 28, 28)), 1, n, titles=titles[0:n])
-if __name__ == '__main__':
-    num_epochs = 5
-    train_ch3(net, train_iter, test_iter, cross_entropy, num_epochs, updater)
-    predict_ch3(net, test_iter)
-    input("")
+
+predict_ch3(net, test_iter)

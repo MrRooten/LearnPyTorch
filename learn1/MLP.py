@@ -5,6 +5,7 @@ import softmax_zero
 batch_size = 256
 train_iter, test_iter = d2l.load_data_fashion_mnist(batch_size)
 
+
 num_inputs, num_outputs, num_hiddens = 784, 10, 256
 
 W1 = nn.Parameter(torch.randn(
@@ -27,6 +28,6 @@ def net(X):
 
 loss = nn.CrossEntropyLoss(reduction='none')
 
-num_epochs, lr = 10, 0.1
+num_epochs, lr = 20, 0.2
 updater = torch.optim.SGD(params, lr=lr)
 softmax_zero.train_ch3(net, train_iter, test_iter, loss, num_epochs, updater)
