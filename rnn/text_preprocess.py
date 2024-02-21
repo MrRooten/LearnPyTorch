@@ -85,11 +85,3 @@ def load_corpus_time_machine(max_tokens=-1):  #@save
         corpus = corpus[:max_tokens]
     return corpus, vocab
 
-if __name__ == '__main__':
-    tokens = tokenize(lines)
-    vocab = Vocab(tokens)
-    print(list(vocab.token_to_idx.items())[:10])
-
-    for i in [0, 10]:
-        print('文本:', tokens[i])
-        print('索引:', vocab[tokens[i]])
